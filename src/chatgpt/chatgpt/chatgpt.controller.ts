@@ -6,8 +6,13 @@ export class ChatgptController {
   constructor(private readonly chatgptService: ChatgptService) {}
 
   @Post('check')
-  async checkSentence(@Body() body: { sentence: string }): Promise<string> {
-    const result = await this.chatgptService.checkSentence(body.sentence);
-    return result;
+  async checkSentence(@Body() data: { message: string }) {
+    try {
+      const result = await this.chatgptService.checkSentence(data.message);
+      return result;
+    } catch (error) {
+      console.error('Error processing request:', error);
+      throw new Error('Internal server error');
+    }
   }
 }
