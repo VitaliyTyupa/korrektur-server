@@ -12,8 +12,7 @@ export class AuthService {
       credentials.password === 'password'
     ) {
       // todo: generate token
-      const token = 'your_generated_token';
-      return token;
+      return 'your_generated_token';
     } else {
       throw new UnauthorizedException('Invalid credentials');
     }

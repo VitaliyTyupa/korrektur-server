@@ -8,8 +8,7 @@ export class ChatgptController {
   @Post('check')
   async checkSentence(@Body() data: { message: string }) {
     try {
-      const result = await this.chatgptService.checkSentence(data.message);
-      return result;
+      return await this.chatgptService.checkSentence(data.message);
     } catch (error) {
       console.error('Error processing request:', error);
       throw new Error('Internal server error');
