@@ -2,15 +2,25 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as AWS from 'aws-sdk';
 
+import {
+  DynamoDBDocument,
+  PutCommandOutput,
+  UpdateCommandOutput,
+} from '@aws-sdk/lib-dynamodb';
+import { DynamoDB } from '@aws-sdk/client-dynamodb';
+
 @Injectable()
 export class DynamodbService {
   // private dynamoClient: AWS.DynamoDB.DocumentClient;
-  private dynamoClient: AWS.DynamoDB.DocumentClient;
+  private dynamoClient: DynamoDBDocument;
   constructor(private readonly configService: ConfigService) {
     const region = this.configService.get('dynamodb.region');
     const accessKeyId = this.configService.get('dynamodb.accessKeyId');
     const secretAccessKey = this.configService.get('dynamodb.secretAccessKey');
 
+    // JS SDK v3 does not support global configuration.
+    // Codemod has attempted to pass values to each service client in this file.
+    // You may need to update clients outside of this file, if they use global config.
     AWS.config.update({
       region,
       accessKeyId,
@@ -18,44 +28,24 @@ export class DynamodbService {
       // endpoint,
     });
 
-    this.dynamoClient = new AWS.DynamoDB.DocumentClient();
+    this.dynamoClient = DynamoDBDocument.from(new DynamoDB());
   }
 
-  async addItem(
-    tableName: string,
-    item: any,
-  ): Promise<AWS.DynamoDB.DocumentClient.PutItemOutput> {
+  async addItem(tableName: string, item: any): Promise<PutCommandOutput> {
     const params = {
       TableName: tableName,
       Item: item,
     };
 
     try {
-      return await this.dynamoClient.put(params).promise();
+      return await this.dynamoClient.put(params);
     } catch (error) {
       throw new Error(`Failed to add item: ${error.message}`);
     }
   }
   // todo: need to debug this function
-  async updateItem(
-    tableName: string,
-    key: any,
-    updateExpression: string,
-    expressionAttributeValues: any,
-  ): Promise<AWS.DynamoDB.DocumentClient.UpdateItemOutput> {
-    const params = {
-      TableName: tableName,
-      Key: key,
-      UpdateExpression: updateExpression,
-      ExpressionAttributeValues: expressionAttributeValues,
-      ReturnValues: 'UPDATED_NEW',
-    };
-
-    try {
-      return await this.dynamoClient.update(params).promise();
-    } catch (error) {
-      throw new Error(`Failed to update item: ${error.message}`);
-    }
+  async updateItem() {
+    throw new Error(`Need to implement updateItem function`);
   }
 
   async getItem(tableName: string, key: any): Promise<any> {
@@ -65,7 +55,7 @@ export class DynamodbService {
     };
 
     try {
-      const data = await this.dynamoClient.get(params).promise();
+      const data = await this.dynamoClient.get(params);
       return data.Item;
     } catch (error) {
       throw new Error(`Failed to get item: ${error.message}`);
@@ -78,7 +68,7 @@ export class DynamodbService {
     };
 
     try {
-      const data = await this.dynamoClient.scan(params).promise();
+      const data = await this.dynamoClient.scan(params);
       return data.Items;
     } catch (error) {
       throw new Error(`Failed to get items: ${error.message}`);

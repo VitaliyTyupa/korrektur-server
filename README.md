@@ -34,7 +34,15 @@ $ npm run test:e2e
 # test coverage
 $ npm run test:cov
 ```
-##Connection to DynamoDB
+## Test connection
+
+```bash
+# The global endpoint prefix is /api 
+request http://localhost:3000/api
+response 'ok'
+```
+
+## Connection to DynamoDB
 ```bash
 # Create a new file in the root directory called .env
 # Add the following to the .env file
