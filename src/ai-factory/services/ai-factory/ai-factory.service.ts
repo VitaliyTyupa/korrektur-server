@@ -3,7 +3,7 @@ import OpenAI from 'openai';
 import * as process from 'process';
 
 @Injectable()
-export class ChatgptService {
+export class AiFactoryService {
   async checkSentence(message: string): Promise<any> {
     const openAIKey = process.env.OPENAI_API_KEY;
     const openai = new OpenAI({
