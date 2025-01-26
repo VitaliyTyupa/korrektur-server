@@ -6,6 +6,7 @@ export interface TextPromptsData {
   countOfSentences: number;
   inputText: string;
   context: string;
+  autogenerateText: boolean;
 }
 
 export class TextPrompts {
@@ -16,6 +17,7 @@ export class TextPrompts {
   countOfSentences!: number;
   inputText!: string;
   context!: string;
+  autogenerateText!: boolean;
 
   // todo: need to type initialData
   constructor(initialData: TextPromptsData) {
@@ -29,7 +31,8 @@ export class TextPrompts {
               - sourceWords: A set of words in ${this.targetLanguage}. Determine the infinitive of the given words and use them in the form according to the task. If a word has several meanings, use the meaning closest to the context of inputText.,
               - inputTasks: A list of tasks in the form of JSON where the key is the task ID and the value is the task description. The tasks may be in ${this.targetLanguage} or have certain rules of expression or definition in German to more accurately convey the task.
               Return the response in the following JSON format:
-              {sourceWords: List of sourceWords in the infinitive form. 
+              {sourceWords: List of sourceWords in the infinitive form.
+                ${this.autogenerateText ? `generatedText: ${this.inputText}` : ''}
                 ${this.targetLanguage === 'German' ? 'Nouns should be indicated with an article, in the singular with a plural ending separated by a comma.' : ''},
                 outputTasks: A list of tasks in the form of JSON where the key is the task ID and the value is accomplished result.}`;
   }
@@ -70,6 +73,9 @@ export class TextPrompts {
         return `Generate ${this.countOfSentences} questions with answers to inputText. Provide response in json format as an array of entity where {question: generated question, antwort: antwort for this question}`;
       case 5:
         return `Generate ${this.countOfSentences} sentences in ${this.sourceLanguage}. Provide response in json format as an array of entity where {source: generated sentence in ${this.sourceLanguage}, translation: correct translation in ${this.targetLanguage}}`;
+      case 6:
+        return `Generate a text in ${this.targetLanguage} from ${this.countOfSentences} sentences using ${this.sourceWords} according to the context: ${this.context}`;
+
       default:
         throw new Error('Invalid task id');
     }

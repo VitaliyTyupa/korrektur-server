@@ -71,6 +71,7 @@ export class AiFactoryService {
       countOfSentences: message.count,
       sourceLanguage: message.sourceLanguage || 'Ukrainian',
       context: message.context || '',
+      autogenerateText: message.autogenerateText,
     };
 
     const promts = new TextPrompts(params);
