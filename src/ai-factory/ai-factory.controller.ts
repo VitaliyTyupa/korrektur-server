@@ -18,7 +18,7 @@ export class AiFactoryController {
   @Post('generate-text')
   async generateText(@Body() data: any) {
     try {
-      return await this.aiFactoryService.generateText(data);
+      return await this.aiFactoryService.generateText(data.message);
     } catch (error) {
       console.error('Error processing request:', error);
       throw new Error('Internal server error');
