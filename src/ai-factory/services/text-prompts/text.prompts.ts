@@ -31,10 +31,10 @@ export class TextPrompts {
               - sourceWords: A set of words in ${this.targetLanguage}. Determine the infinitive of the given words and use them in the form according to the task. If a word has several meanings, use the meaning closest to the context of inputText.,
               - inputTasks: A list of tasks in the form of JSON where the key is the task ID and the value is the task description. The tasks may be in ${this.targetLanguage} or have certain rules of expression or definition in German to more accurately convey the task.
               Return the response in the following JSON format:
-              {sourceWords: List of sourceWords in the infinitive form.
+              {sourceWords: List of sourceWords in their initial form, if they are verbs then in the infinitive.
                 ${this.autogenerateText ? `generatedText: ${this.inputText}` : ''}
-                ${this.targetLanguage === 'German' ? 'Nouns should be indicated with an article, in the singular with a plural ending separated by a comma.' : ''},
-                outputTasks: A list of tasks in the form of JSON where the key is the task ID and the value is accomplished result.}`;
+                ${this.targetLanguage === 'German' ? 'Nouns should be indicated with an article, in the singular with a plural ending separated by a comma' : ''},
+                outputTasks: A list of tasks. The task format should be: {id: task ID, value: response to the task}.`;
   }
 
   getTasks(ids: number[]): any {
