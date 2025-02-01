@@ -66,16 +66,13 @@ export class TextPrompts {
       case 1:
         return `Generate ${this.countOfSentences} new sentences using sourceWords. Sentences should align with the context of the original inputText. Place the sourceWords  in correct form in square brackets within the generated sentences.`;
       case 2:
-        return `Provide definitions of sourceWords in ${this.targetLanguage}. Provide response in json format {word: definition}`;
+        return `Generate definitions in ${this.targetLanguage} of sourceWords. Provide response in json format {targetWord: word of sourceWord, definition: definition of current word}`;
       case 3:
-        return `Create ${this.countOfSentences} True/False statements. Provide response in json format - correct answer in square brackets as a key: statement as a value`;
+        return `Generate ${this.countOfSentences} True/False statements. Provide response in json format {correctAnswer: answer, statement: statement}`;
       case 4:
-        return `Generate ${this.countOfSentences} questions with answers to inputText. Provide response in json format as an array of entity where {question: generated question, antwort: antwort for this question}`;
+        return `Generate ${this.countOfSentences} questions with answers to inputText. Provide response in json format {question: generated question, answer: answer for this question}`;
       case 5:
-        return `Generate ${this.countOfSentences} sentences in ${this.sourceLanguage}. Provide response in json format as an array of entity where {source: generated sentence in ${this.sourceLanguage}, translation: correct translation in ${this.targetLanguage}}`;
-      case 6:
-        return `Generate a text in ${this.targetLanguage} from ${this.countOfSentences} sentences using ${this.sourceWords} according to the context: ${this.context}`;
-
+        return `Generate ${this.countOfSentences} sentences in ${this.sourceLanguage}. Provide response in json format {source: generated sentence in ${this.sourceLanguage}, translation: correct translation in ${this.targetLanguage}}`;
       default:
         throw new Error('Invalid task id');
     }
