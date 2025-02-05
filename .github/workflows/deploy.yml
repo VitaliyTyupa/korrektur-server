@@ -40,5 +40,6 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            source ~/.bashrc  # or ~/.bash_profile
             cd /home/ubuntu/korrektur-server
-            pm2 restart all
+            /home/ubuntu/.nvm/versions/node/v18.20.6/bin/pm2 restart all
