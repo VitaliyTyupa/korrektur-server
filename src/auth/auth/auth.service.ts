@@ -1,9 +1,13 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from "../../user/user.service";
+import { JwtService } from "@nestjs/jwt";
 
 @Injectable()
 export class AuthService {
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private jwtService: JwtService
+  ) {}
 
   async validateUser(username: string, pass: string): Promise<any> {
     const user = await this.userService.findOne(username);
@@ -14,19 +18,20 @@ export class AuthService {
     return null;
   }
 
-  async login(credentials: {
-    username: string;
-    password: string;
-  }): Promise<string> {
-    if (
-      // todo: should be changed to more secure
-      credentials.username === 'example' &&
-      credentials.password === 'password'
-    ) {
-      // todo: generate token
-      return 'your_generated_token';
-    } else {
-      throw new UnauthorizedException('Invalid credentials');
+  async signIn(
+    username: string,
+    pass: string,
+  ): Promise<{ access_token: string }> {
+    console.log(`AuthService.signIn called with username: ${username}, password: ${pass}`);
+    const user = await this.userService.findOne(username);
+    console.log(user);
+    if (user?.password !== pass) {
+      throw new UnauthorizedException();
     }
+    const payload = { sub: user.userId, username: user.username };
+    console.log(payload);
+    return {
+      access_token: await this.jwtService.signAsync(payload),
+    };
   }
 }
