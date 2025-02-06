@@ -1,17 +1,17 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ChatgptModule } from './chatgpt/chatgpt/chatgpt.module';
-import { AuthModule } from './auth/auth/auth.module';
+import { AuthModule } from './auth/auth.module';
 import { FormBuilderModule } from './form-builder/form-builder.module';
 import { ConfigModule } from '@nestjs/config';
-import dynamodbConfig from '../config/dynamodb.config';
+import dynamodbConfig from './config/dynamodb.config';
 import { DynamodbService } from './common-services/dynamodb/dynamodb.service';
 import { UserModule } from './user/user.module';
+import { AiFactoryModule } from './ai-factory/ai-factory.module';
 
 @Module({
   imports: [
-    ChatgptModule,
+    AiFactoryModule,
     AuthModule,
     FormBuilderModule,
     ConfigModule.forRoot({

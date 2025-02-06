@@ -2,6 +2,10 @@
 ## Description
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Requirements
+- Node.js v.18
+- Nest.js v.10
+
 
 ## Installation
 

@@ -1,15 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import OpenAI from 'openai';
 import * as process from 'process';
+import { TextPrompts, TextPromptsData } from '../text-prompts/text.prompts';
 
 @Injectable()
-export class ChatgptService {
+export class AiFactoryService {
+  constructor() {}
   async checkSentence(message: string): Promise<any> {
     const openAIKey = process.env.OPENAI_API_KEY;
     const openai = new OpenAI({
       apiKey: openAIKey,
     });
-    console.log(message);
     const completion = await openai.chat.completions.create({
       messages: [
         {
@@ -53,8 +54,62 @@ export class ChatgptService {
       model: 'gpt-3.5-turbo',
     });
 
-    console.log(completion.choices[0]);
     const responce = completion.choices[0];
     return { message: `Checked sentence: ${responce.message.content}` };
+  }
+
+  async generateText(message: any): Promise<any> {
+    const openAIKey = process.env.OPENAI_API_KEY;
+    const openai = new OpenAI({
+      apiKey: openAIKey,
+    });
+    const params: TextPromptsData = {
+      targetLanguage: message.language,
+      languageLevel: message.languageLevel,
+      inputText: message.text || '',
+      sourceWords: message.sourceWords || '',
+      countOfSentences: message.count,
+      sourceLanguage: message.sourceLanguage || 'Ukrainian',
+      context: message.context || '',
+      autogenerateText: message.autogenerateText,
+    };
+
+    const promts = new TextPrompts(params);
+    const taskIds = message.taskType;
+    const messages = [
+      {
+        role: 'system',
+        content: [
+          {
+            text: promts.systemRole,
+            type: 'text',
+          },
+        ],
+      },
+      {
+        role: 'user',
+        content: [
+          {
+            type: 'text',
+            text: promts.getUserRole(taskIds),
+          },
+        ],
+      },
+    ];
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o',
+      messages: messages as any,
+      response_format: {
+        type: 'json_object',
+      },
+      temperature: 1,
+      max_completion_tokens: 2048,
+      top_p: 1,
+      frequency_penalty: 0,
+      presence_penalty: 0,
+    });
+
+    const responce = completion.choices[0];
+    return JSON.stringify(responce.message.content);
   }
 }
