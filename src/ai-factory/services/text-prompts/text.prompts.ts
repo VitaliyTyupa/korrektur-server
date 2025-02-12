@@ -37,7 +37,7 @@ export class TextPrompts {
                 outputTasks: A list of tasks. The task format should be: {id: task ID, value: response to the task}.`;
   }
 
-  getTasks(ids: number[]): any {
+  getTasks(ids: string[]): any {
     return ids.map((id) => {
       return {
         [id]: this.generateTaskPrompt(id),
@@ -55,23 +55,23 @@ export class TextPrompts {
     }
   }
 
-  getUserRole(ids: number[]): string {
+  getUserRole(ids: string[]): string {
     return `${this.inputTextDetailes} 
     sourceWords: ${this.sourceWords} 
     inputTasks: ${JSON.stringify(this.getTasks(ids))}`;
   }
 
-  private generateTaskPrompt(id: number): string {
+  private generateTaskPrompt(id: string): string {
     switch (id) {
-      case 1:
+      case '1':
         return `Generate ${this.countOfSentences} new sentences using sourceWords. Sentences should align with the context of the original inputText. Place the sourceWords  in correct form in square brackets within the generated sentences.`;
-      case 2:
+      case '2':
         return `Generate definitions in ${this.targetLanguage} of sourceWords. Provide response in json format {targetWord: word of sourceWord, definition: definition of current word}`;
-      case 3:
+      case '3':
         return `Generate ${this.countOfSentences} True/False statements. Provide response in json format {correctAnswer: answer, statement: statement}`;
-      case 4:
+      case '4':
         return `Generate ${this.countOfSentences} questions with answers to inputText. Provide response in json format {question: generated question, answer: answer for this question}`;
-      case 5:
+      case '5':
         return `Generate ${this.countOfSentences} sentences in ${this.sourceLanguage}. Provide response in json format {source: generated sentence in ${this.sourceLanguage}, translation: correct translation in ${this.targetLanguage}}`;
       default:
         throw new Error('Invalid task id');
