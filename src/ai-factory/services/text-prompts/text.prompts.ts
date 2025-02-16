@@ -28,8 +28,8 @@ export class TextPrompts {
     return `You are an expert ${this.targetLanguage} language teacher tasked with generating content for exercises. You will create grammatically and stylistically correct sentences in ${this.targetLanguage} unless otherwise specified in the task. Lexical and grammatical constructions should adhere to the ${this.languageLevel} language level.
               Input Details:
               - inputText: Some ${this.targetLanguage} text provided by the user or generated on request,
-              - sourceWords: A set of words in ${this.targetLanguage}. Determine the infinitive of the given words and use them in the form according to the task. If a word has several meanings, use the meaning closest to the context of inputText.,
-              - inputTasks: A list of tasks in the form of JSON where the key is the task ID and the value is the task description. The tasks may be in ${this.targetLanguage} or have certain rules of expression or definition in German to more accurately convey the task.
+              - sourceWords: A set of words in ${this.targetLanguage}. Determine the initial form of the given words and use them in the form according to the task. If a word has several meanings, use the meaning closest to the context of inputText.,
+              - inputTasks: A list of tasks in the form of JSON where the key is the task ID and the value is the task description. The tasks may be in ${this.targetLanguage} or have certain rules of expression or definition in ${this.targetLanguage} to more accurately convey the task.
               Return the response in the following JSON format:
               {sourceWords: List of sourceWords in their initial form, if they are verbs then in the infinitive.
                 ${this.autogenerateText ? `generatedText: ${this.inputText}` : ''}
@@ -49,9 +49,9 @@ export class TextPrompts {
     if (this.inputText) {
       return `inputText: ${this.inputText}`;
     } else if (this.context) {
-      return `inputText: Generate a text in ${this.targetLanguage} from ${this.countOfSentences} sentences using ${this.sourceWords} according to the context: ${this.context}`;
+      return `inputText: Generate a text in ${this.targetLanguage} from ${this.countOfSentences} sentences using ${this.sourceWords} according to the context: ${this.context} and return result as a simple string.`;
     } else {
-      return `inputText: Generate a text in ${this.targetLanguage} from ${this.countOfSentences} sentences using ${this.sourceWords}`;
+      return `inputText: Generate a text in ${this.targetLanguage} from ${this.countOfSentences} sentences using ${this.sourceWords} and return result as a simple string.`;
     }
   }
 
