@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import OpenAI from 'openai';
 import * as process from 'process';
-import { TextPrompts, TextPromptsData } from '../text-prompts/text.prompts';
+import { TaskRequirements, TextPrompts, TextPromptsData } from "../text-prompts/text.prompts";
 
 @Injectable()
 export class AiFactoryService {
@@ -63,6 +63,15 @@ export class AiFactoryService {
     const openai = new OpenAI({
       apiKey: openAIKey,
     });
+
+    const requirements: TaskRequirements = {
+      tenses: message.tenses,
+      activeForm: message.activeForm,
+      konjunktiv: message.konjunktiv,
+      helperVerbs: message.helperVerbs,
+      deklination: message.deklination,
+      kasus: message.kasus,
+    };
     const params: TextPromptsData = {
       targetLanguage: message.language,
       languageLevel: message.languageLevel,
@@ -72,6 +81,7 @@ export class AiFactoryService {
       sourceLanguage: message.sourceLanguage || 'Ukrainian',
       context: message.context || '',
       autogenerateText: message.autogenerateText,
+      requirements,
     };
 
     const promts = new TextPrompts(params);
