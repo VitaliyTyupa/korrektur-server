@@ -30,6 +30,8 @@
     "@nestjs/passport": "^11.0.2",
     "@nestjs/platform-express": "^10.0.0",
     "aws-sdk": "^2.1692.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
     "openai": "^4.24.1",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",

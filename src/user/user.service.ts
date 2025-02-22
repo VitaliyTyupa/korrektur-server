@@ -1,11 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import {Role} from "aws-sdk/clients/s3";
+
+export enum UserRole {
+  STUDENT = 'student',
+  TEACHER = 'teacher',
+}
 
 export type User = {
   email: string;
   password: string;
   username: string;
+  role: Role;
 };
 
 @Injectable()
@@ -15,11 +22,13 @@ export class UserService {
       userId: 1,
       username: 'john',
       password: 'changeme',
+      role: 'teacher',
     },
     {
       userId: 2,
       username: 'maria',
       password: 'guess',
+      role: 'student',
     },
   ];
 
@@ -31,13 +40,13 @@ export class UserService {
     return `This action returns all user`;
   }
 
-  findOne(username: string):{ password: string; userId: number; username: string } | {
-    password: string;
-    userId: number;
-    username: string
-  } {
+  findOne(
+    username: string,
+  ): {
+    role: any;
+    password: string; userId: number; username: string } | undefined {
     console.log(`Searching for user: ${username}`);
-    const user = this.users.find(user => user.username === username);
+    const user = this.users.find((user) => user.username === username);
     console.log('Found user:', user);
     return user;
   }
