@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DynamodbService } from '../common-services/dynamodb/dynamodb.service';
-import { Tables } from '../common-types/constants.enum';
 import { v4 as uuidv4 } from 'uuid';
+import { Tables } from '../common-types/dynamoDB.interface';
 
 @Injectable()
 export class FormBuilderService {
