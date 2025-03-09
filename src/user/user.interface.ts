@@ -4,16 +4,15 @@ export enum Role {
 }
 
 export class User {
-  id: number;
+  id: string;
   name: string;
-
   email: string;
   password: string;
-  roles: Role[];
+  role: Role[];
 }
 
 export interface UserPayload {
   sub: string;
   username: string;
-  roles: Role[];
+  role: Role[];
 }

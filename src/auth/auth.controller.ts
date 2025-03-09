@@ -9,26 +9,24 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Public } from '../decorators/public.decorator';
+import { CreateUserDto } from '../user/dto/create-user.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService
-  ) {
-  }
+  constructor(private readonly authService: AuthService) {}
 
   @Public()
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  signIn(@Body() signInDto: Record<string, any>) {
-    return this.authService.signIn(signInDto.username, signInDto.password);
+  signIn(@Body() signInDto: { email: string; password: string }) {
+    return this.authService.signIn(signInDto.email, signInDto.password);
   }
 
   @Public()
   @HttpCode(HttpStatus.OK)
-  @Post('registration')
-  signUp(@Body() signInDto: Record<string, any>) {
-    return this.authService.singUp(signInDto.username, signInDto.password);
+  @Post('signup')
+  signUp(@Body() user: CreateUserDto) {
+    return this.authService.singUp(user);
   }
 
   @Get('profile')

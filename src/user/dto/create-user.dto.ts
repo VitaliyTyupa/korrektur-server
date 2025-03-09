@@ -1,5 +1,5 @@
 import { IsEmail, IsEnum, IsNotEmpty, MinLength } from 'class-validator';
-import { Role } from '../../common-types/user.interface';
+import { Role } from '../user.interface';
 
 export class CreateUserDto {
   @IsEmail()
@@ -9,6 +9,9 @@ export class CreateUserDto {
   @MinLength(6)
   password: string;
 
-  @IsEnum(Role, { message: 'Role must be either "student" or "teacher"' })
-  role: Role = Role.STUDENT;
+  @IsEnum(Role)
+  role: Role;
+
+  @IsNotEmpty()
+  name: string;
 }

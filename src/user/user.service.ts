@@ -1,37 +1,48 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { v4 as uuidv4 } from 'uuid';
+import { Tables } from '../dynamodb/dynamoDB.interface';
+import { DynamodbService } from '../dynamodb/dynamodb.service';
+import { User } from './user.interface';
 
 @Injectable()
 export class UserService {
-  private readonly users = [
-    {
-      userId: '1',
-      username: 'john',
-      password: 'changeme',
-      role: 'teacher',
-    },
-    {
-      userId: '2',
-      username: 'maria',
-      password: 'guess',
-      role: 'student',
-    },
-  ];
+  constructor(private dynamodbService: DynamodbService) {}
 
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  async create(createUserDto: CreateUserDto) {
+    try {
+      const id = uuidv4();
+      await this.dynamodbService.addItem(Tables.USER_TABLE, {
+        ...createUserDto,
+        id,
+      });
+      // todo: return created User
+      return { message: 'User created successfully' };
+    } catch (error) {
+      console.error('Error processing request:', error.message);
+      throw new Error('Failed to save User');
+    }
   }
 
   findAll() {
     return `This action returns all user`;
   }
 
-  findOne(username: string,):
-    | { role: any; password: string; userId: string; username: string }
-    | undefined {
-    const user = this.users.find((user) => user.username === username);
-    return user;
+  async findByEmail(email: string): Promise<User | undefined> {
+    const result = await this.dynamodbService.getItemByIndex(
+      Tables.USER_TABLE,
+      'email-index',
+      'email',
+      email,
+    );
+    return result[0];
+  }
+
+  async findOneById(id: string): Promise<User | undefined> {
+    return await this.dynamodbService.getItemById(Tables.USER_TABLE, {
+      id: id,
+    });
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
