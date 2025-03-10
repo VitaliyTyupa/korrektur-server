@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { FormBuilderController } from './form-builder.controller';
 import { FormBuilderService } from './form-builder.service';
-import { DynamodbService } from '../common-services/dynamodb/dynamodb.service';
+import { DynamodbService } from '../dynamodb/dynamodb.service';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { DynamodbService } from '../common-services/dynamodb/dynamodb.service';
-import { Tables } from '../common-types/constants.enum';
+import { DynamodbService } from '../dynamodb/dynamodb.service';
 import { v4 as uuidv4 } from 'uuid';
+import { Tables } from '../dynamodb/dynamoDB.interface';
 
 @Injectable()
 export class FormBuilderService {
@@ -14,7 +14,7 @@ export class FormBuilderService {
   async getFormByID(id: string) {
     try {
       const key = { id };
-      return await this.dynamodbService.getItem(Tables.FORM_TABLE, key);
+      return await this.dynamodbService.getItemById(Tables.FORM_TABLE, key);
     } catch (error) {
       console.error('Error processing request:', error.message);
       throw new Error(`Failed to get form: ${id}`);
