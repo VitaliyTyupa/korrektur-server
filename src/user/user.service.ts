@@ -17,7 +17,6 @@ export class UserService {
         ...createUserDto,
         id,
       });
-      // todo: return created User
       return { message: 'User created successfully' };
     } catch (error) {
       console.error('Error processing request:', error.message);

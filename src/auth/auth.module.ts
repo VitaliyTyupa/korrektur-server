@@ -26,6 +26,7 @@ import { RolesGuard } from '../guards/roles.guard';
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,
+      // todo: need to be updated to short time with refresh token
       signOptions: { expiresIn: '7d' },
     }),
   ],
