@@ -2,10 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as AWS from 'aws-sdk';
 
-import {
-  DynamoDBDocument,
-  PutCommandOutput,
-} from '@aws-sdk/lib-dynamodb';
+import { DynamoDBDocument, PutCommandOutput } from '@aws-sdk/lib-dynamodb';
 import { DynamoDB } from '@aws-sdk/client-dynamodb';
 
 @Injectable()
