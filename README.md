@@ -60,6 +60,7 @@ AWS_REGION=your_region
 ```bash
 ...
 - sudo apt update
+- cd korrektur-server
 - pm2 start dist/main.js --name korrektur-service
 - pm2 stop all
 - pm2 restart all

@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import OpenAI from 'openai';
 import * as process from 'process';
-import { TaskRequirements, TextPrompts, TextPromptsData } from "../text-prompts/text.prompts";
+import { TaskRequirements, TextPrompts, TextPromptsData } from "../prompts/text.prompts";
+import { TextGenerator, TextGeneratorData } from "../prompts/text-generator";
 
 @Injectable()
 export class AiFactoryService {
@@ -86,6 +87,9 @@ export class AiFactoryService {
 
     const promts = new TextPrompts(params);
     const taskIds = message.taskType;
+    console.log(promts.systemRole);
+    console.log("=======================");
+    console.log(promts.getUserRole(taskIds));
     const messages = [
       {
         role: 'system',
@@ -102,6 +106,66 @@ export class AiFactoryService {
           {
             type: 'text',
             text: promts.getUserRole(taskIds),
+          },
+        ],
+      },
+    ];
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o',
+      messages: messages as any,
+      response_format: {
+        type: 'json_object',
+      },
+      temperature: 1,
+      max_completion_tokens: 2048,
+      top_p: 1,
+      frequency_penalty: 0,
+      presence_penalty: 0,
+    });
+
+    const responce = completion.choices[0];
+    return JSON.stringify(responce.message.content);
+  }
+
+  async generateText_V2(data: any): Promise<any> {
+    console.log(data);
+    const openAIKey = process.env.OPENAI_API_KEY;
+    const openai = new OpenAI({
+      apiKey: openAIKey,
+    });
+
+    const params: TextGeneratorData = {
+      targetLanguage: data.language,
+      languageLevel: data.languageLevel,
+      sourceWords: data.sourceWords,
+      countOfSentences: data.count,
+      context: data.context,
+      tens: data.tens,
+      adjective: data.adjective,
+      noun: data.noun,
+      verb: data.verb,
+      preposition: data.preposition,
+      sentences: data.sentences,
+      textType: data.textType,
+    };
+
+    const promts = new TextGenerator(params);
+    const messages = [
+      {
+        role: 'system',
+        content: [
+          {
+            text: promts.getSystemRole(),
+            type: 'text',
+          },
+        ],
+      },
+      {
+        role: 'user',
+        content: [
+          {
+            type: 'text',
+            text: promts.getUserRole(),
           },
         ],
       },

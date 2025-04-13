@@ -24,4 +24,14 @@ export class AiFactoryController {
       throw new Error('Internal server error');
     }
   }
+
+  @Post('generate-text-v2')
+  async generateText_V2(@Body() data: any) {
+    try {
+      return await this.aiFactoryService.generateText_V2(data);
+    } catch (error) {
+      console.error('Error processing request:', error);
+      throw new Error('Internal server error');
+    }
+  }
 }
