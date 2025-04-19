@@ -1,10 +1,12 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { FormBuilderService } from './form-builder.service';
+import { Public } from '../decorators/public.decorator';
 
 @Controller('form-builder')
 export class FormBuilderController {
   constructor(private readonly formBuilderService: FormBuilderService) {}
 
+  @Public()
   @Get('/all-forms')
   async getForms() {
     try {
@@ -15,6 +17,7 @@ export class FormBuilderController {
     }
   }
 
+  @Public()
   @Get('/form/:id')
   async getFormByID(@Param('id') id: string) {
     try {
@@ -25,6 +28,7 @@ export class FormBuilderController {
     }
   }
 
+  @Public()
   @Post('/form')
   async saveForm(@Body() data: { form: any; id: string | null }) {
     try {
