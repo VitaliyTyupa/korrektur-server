@@ -1,8 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import OpenAI from 'openai';
 import * as process from 'process';
-import { TaskRequirements, TextPrompts, TextPromptsData } from "../prompts/text.prompts";
-import { TextGenerator, TextGeneratorData } from "../prompts/text-generator";
+import {
+  TaskRequirements,
+  TextPrompts,
+  TextPromptsData,
+} from '../prompts/text.prompts';
+import { TextGenerator, TextGeneratorData } from '../prompts/text-generator';
 
 @Injectable()
 export class AiFactoryService {
@@ -87,9 +91,6 @@ export class AiFactoryService {
 
     const promts = new TextPrompts(params);
     const taskIds = message.taskType;
-    console.log(promts.systemRole);
-    console.log("=======================");
-    console.log(promts.getUserRole(taskIds));
     const messages = [
       {
         role: 'system',
@@ -184,6 +185,12 @@ export class AiFactoryService {
     });
 
     const responce = completion.choices[0];
-    return JSON.stringify(responce.message.content);
+    try {
+      const value = responce.message.content ?? '';
+      return JSON.parse(value);
+    } catch (error) {
+      console.error('Failed to parse JSON:', error);
+      return { error };
+    }
   }
 }
