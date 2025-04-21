@@ -86,4 +86,17 @@ export class DynamodbService {
       throw new Error(`Failed to get items: ${error.message}`);
     }
   }
+
+  async deleteItem(tableName: string, key: {id: string}) {
+    const params = {
+      TableName: tableName,
+      Key: key,
+    };
+
+    try {
+      await this.dynamoClient.delete(params);
+    } catch (error) {
+      throw new Error(`Failed to delete item: ${error.message}`);
+    }
+  }
 }
