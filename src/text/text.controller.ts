@@ -5,22 +5,22 @@ import { TextService } from './text.service';
 export class TextController {
   constructor(private readonly service: TextService) {}
 
-  @Get('/texts')
+  @Get('/all')
   getTexts() {
     return this.service.getTexts();
   }
 
-  @Get('/text/:id')
+  @Get('/:id')
   getText(@Param('id') id: string) {
     return this.service.getTextById(id);
   }
 
-  @Post('/text')
+  @Post('/')
   createText(@Body() data) {
     return this.service.createText(data);
   }
 
-  @Delete('/text/:id')
+  @Delete('/:id')
   deleteText(@Param('id') id: string) {
     return this.service.deleteTextById(id);
   }

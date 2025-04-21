@@ -8,13 +8,13 @@ export class TextService {
   constructor(private readonly dynamodbService: DynamodbService) {}
 
   async getTexts() {
-    return await this.dynamodbService.getAllItems(Tables.FORM_TABLE);
+    return await this.dynamodbService.getAllItems(Tables.TEXT_TABLE);
   }
 
   async getTextById(id) {
     try {
       const key = { id };
-      return this.dynamodbService.getItemById(Tables.FORM_TABLE, key);
+      return this.dynamodbService.getItemById(Tables.TEXT_TABLE, key);
     } catch (error) {
       console.error('Error processing request:', error.message);
       throw new Error(`Failed to get form: ${id}`);
