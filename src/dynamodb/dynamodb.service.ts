@@ -44,7 +44,7 @@ export class DynamodbService {
     throw new Error(`Need to implement updateItem function`);
   }
 
-  async getItemById(tableName: string, key: {id: string}): Promise<any> {
+  async getItemById(tableName: string, key: {[id: string]: string}): Promise<any> {
     const params = {
       TableName: tableName,
       Key: key,

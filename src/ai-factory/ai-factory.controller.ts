@@ -1,5 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { AiFactoryService } from './services/ai-factory/ai-factory.service';
+import { User } from '../user/user.interface';
+import { CurrentUser } from '../decorators/current-user.decorator';
 
 @Controller('ai-factory')
 export class AiFactoryController {
@@ -26,9 +28,9 @@ export class AiFactoryController {
   }
 
   @Post('generate-text-v2')
-  async generateText_V2(@Body() data: any) {
+  async generateText_V2(@Body() data: any, @CurrentUser() user: Partial<User>) {
     try {
-      return await this.aiFactoryService.generateText_V2(data);
+      return await this.aiFactoryService.generateText_V2(data, user);
     } catch (error) {
       console.error('Error processing request:', error);
       throw new Error('Internal server error');

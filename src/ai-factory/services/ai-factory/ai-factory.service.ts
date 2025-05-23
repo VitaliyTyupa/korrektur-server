@@ -7,10 +7,15 @@ import {
   TextPromptsData,
 } from '../prompts/text.prompts';
 import { TextGenerator, TextGeneratorData } from '../prompts/text-generator';
+import { DynamodbService } from '../../../dynamodb/dynamodb.service';
+import { Tables } from '../../../dynamodb/dynamoDB.interface';
+import { User } from '../../../user/user.interface';
 
 @Injectable()
 export class AiFactoryService {
-  constructor() {}
+  constructor(
+    private readonly dynamodbService: DynamodbService,
+  ) {}
   async checkSentence(message: string): Promise<any> {
     const openAIKey = process.env.OPENAI_API_KEY;
     const openai = new OpenAI({
@@ -128,8 +133,7 @@ export class AiFactoryService {
     return JSON.stringify(responce.message.content);
   }
 
-  async generateText_V2(data: any): Promise<any> {
-    console.log(data);
+  async generateText_V2(data: any, user: Partial<User>): Promise<any> {
     const openAIKey = process.env.OPENAI_API_KEY;
     const openai = new OpenAI({
       apiKey: openAIKey,
@@ -184,13 +188,30 @@ export class AiFactoryService {
       presence_penalty: 0,
     });
 
-    const responce = completion.choices[0];
+    const response = completion.choices[0];
+    const usage = completion.usage;
+
     try {
-      const value = responce.message.content ?? '';
+      if (user?.id && usage?.total_tokens) {
+        await this.loggingTokensUsage(user.id, usage.total_tokens);
+      }
+      const value = response.message.content ?? '';
       return JSON.parse(value);
     } catch (error) {
       console.error('Failed to parse JSON:', error);
       return { error };
     }
+  }
+
+  async loggingTokensUsage(userId: string, tokens: number): Promise<void> {
+    const existingRecord = await this.dynamodbService.getItemById(Tables.USAGE_TABLE, { userId });
+    const newTotal = existingRecord?.total_tokens
+      ? existingRecord.total_tokens + tokens
+      : tokens;
+    const newRecord = {
+      userId,
+      total_tokens: newTotal,
+    };
+    await this.dynamodbService.addItem(Tables.USAGE_TABLE, newRecord);
   }
 }

@@ -9,6 +9,7 @@ import { DynamodbService } from './dynamodb/dynamodb.service';
 import { UserModule } from './user/user.module';
 import { AiFactoryModule } from './ai-factory/ai-factory.module';
 import { TextModule } from './text/text.module';
+import { LogModule } from './log/log.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { TextModule } from './text/text.module';
     }),
     UserModule,
     TextModule,
+    LogModule,
   ],
   controllers: [AppController],
   providers: [AppService, DynamodbService],
