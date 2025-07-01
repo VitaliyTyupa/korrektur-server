@@ -20,31 +20,36 @@ export class LogInterceptor implements NestInterceptor {
     const startTime = Date.now();
     const { method, url, user, query, body } = request;
     const host = request.headers.host;
-    const logData = {
-      method,
-      domain: host.split(':')[0],
-      url,
-      userId: user?.sub || 'Anonymous',
-      params: method === 'GET' ? query : body,
-      timestamp: new Date().toISOString(),
-    };
+    const domain = host.split(':')[0];
+    if (domain === 'localhost') {
+      return next.handle();
+    } else {
+      const logData = {
+        method,
+        domain: host.split(':')[0],
+        url,
+        userId: user?.sub || 'Anonymous',
+        params: method === 'GET' ? query : body,
+        timestamp: new Date().toISOString(),
+      };
 
-    return next.handle().pipe(
-      tap(async () => {
-        logData['statusCode'] = response.statusCode;
-        logData['duration'] = `${Date.now() - startTime}ms`;
-        try {
-          await this.logService.saveLog(logData);
-        } catch (error) {
-          console.error('Failed to save log:', error.message);
-        }
-      }),
-      catchError((error) => {
-        logData['error'] = error.message;
-        logData['statusCode'] = error.status || 500;
-        this.logService.saveLog(logData).then();
-        return throwError(() => error);
-      }),
-    );
+      return next.handle().pipe(
+        tap(async () => {
+          logData['statusCode'] = response.statusCode;
+          logData['duration'] = `${Date.now() - startTime}ms`;
+          try {
+            await this.logService.saveLog(logData);
+          } catch (error) {
+            console.error('Failed to save log:', error.message);
+          }
+        }),
+        catchError((error) => {
+          logData['error'] = error.message;
+          logData['statusCode'] = error.status || 500;
+          this.logService.saveLog(logData).then();
+          return throwError(() => error);
+        }),
+      );
+    }
   }
 }
