@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from "@nestjs/common";
 import OpenAI from 'openai';
 import * as process from 'process';
 import {
@@ -10,11 +10,29 @@ import { TextGenerator, TextGeneratorData } from '../prompts/text-generator';
 import { DynamodbService } from '../../../dynamodb/dynamodb.service';
 import { Tables } from '../../../dynamodb/dynamoDB.interface';
 import { User } from '../../../user/user.interface';
+import { TaskGeneratorService } from "../task-generator.service";
+
+export interface GapTextBody {
+  selectedWords?: string[];
+  wordList?: string;
+  selectedType?: string;
+  [key: string]: any;
+}
+
+export interface TaskConfig {
+  text: string;
+  gap_text?: GapTextBody;
+  true_false?: { count: number };
+  question_answer?: { count: number };
+  translate?: { count: number };
+  word_definition?: { wordList: string };
+}
 
 @Injectable()
 export class AiFactoryService {
   constructor(
     private readonly dynamodbService: DynamodbService,
+    private readonly taskGenerator: TaskGeneratorService,
   ) {}
   async checkSentence(message: string): Promise<any> {
     const openAIKey = process.env.OPENAI_API_KEY;
@@ -204,7 +222,10 @@ export class AiFactoryService {
   }
 
   async loggingTokensUsage(userId: string, tokens: number): Promise<void> {
-    const existingRecord = await this.dynamodbService.getItemById(Tables.USAGE_TABLE, { userId });
+    const existingRecord = await this.dynamodbService.getItemById(
+      Tables.USAGE_TABLE,
+      { userId },
+    );
     const newTotal = existingRecord?.total_tokens
       ? existingRecord.total_tokens + tokens
       : tokens;
@@ -213,5 +234,92 @@ export class AiFactoryService {
       total_tokens: newTotal,
     };
     await this.dynamodbService.addItem(Tables.USAGE_TABLE, newRecord);
+  }
+
+  async generateTask(body: TaskConfig): Promise<any> {
+    if (!body?.text) {
+      throw new BadRequestException('text is required');
+    }
+
+    const tasks: string[] = [];
+    const schemas: string[] = [];
+    const instructions: string[] = [];
+
+    if (body.gap_text) {
+      const { prompt, schema } = this.taskGenerator.gapTextPrompt(
+        body.gap_text,
+      );
+      instructions.push(prompt);
+      schemas.push(schema);
+      tasks.push('gap_text');
+    }
+
+    if (body.true_false) {
+      const { prompt, schema } = this.taskGenerator.trueFalsePrompt(
+        body.true_false,
+      );
+      instructions.push(prompt);
+      schemas.push(schema);
+      tasks.push('true_false');
+    }
+
+    if (body.question_answer) {
+      const { prompt, schema } = this.taskGenerator.questionAnswerPrompt(
+        body.question_answer,
+      );
+      instructions.push(prompt);
+      schemas.push(schema);
+      tasks.push('question_answer');
+    }
+
+    if (body.translate) {
+      const { prompt, schema } = this.taskGenerator.translatePrompt(
+        body.translate,
+      );
+      instructions.push(prompt);
+      schemas.push(schema);
+      tasks.push('translate');
+    }
+
+    if (body.word_definition) {
+      const { prompt, schema } = this.taskGenerator.wordDefinitionPrompt(
+        body.word_definition,
+      );
+      instructions.push(prompt);
+      schemas.push(schema);
+      tasks.push('word_definition');
+    }
+
+    if (!tasks.length) {
+      throw new BadRequestException('No task options provided');
+    }
+
+    const system =
+      'You are a helpful assistant that creates language learning tasks. ' +
+      'Return a valid JSON object containing only the keys for the requested tasks. ' +
+      'Use the following schema for each key:\n' +
+      schemas.join('\n') +
+      '\nDo not include any additional commentary.';
+
+    const user = `Text:\n${body.text}\n\n` + instructions.join('\n\n');
+
+    const openAIKey = process.env.OPENAI_API_KEY;
+    const openai = new OpenAI({ apiKey: openAIKey });
+
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o',
+      messages: [
+        { role: 'system', content: system },
+        { role: 'user', content: user },
+      ],
+      response_format: { type: 'json_object' },
+    });
+
+    const responseMessage = completion.choices[0].message.content ?? '';
+    try {
+      return JSON.parse(responseMessage);
+    } catch (error) {
+      return { error: 'Failed to parse response', raw: responseMessage };
+    }
   }
 }

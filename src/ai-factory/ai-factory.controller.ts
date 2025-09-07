@@ -1,5 +1,5 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { AiFactoryService } from './services/ai-factory/ai-factory.service';
+import { AiFactoryService, TaskConfig } from "./services/ai-factory/ai-factory.service";
 import { User } from '../user/user.interface';
 import { CurrentUser } from '../decorators/current-user.decorator';
 
@@ -31,6 +31,16 @@ export class AiFactoryController {
   async generateText_V2(@Body() data: any, @CurrentUser() user: Partial<User>) {
     try {
       return await this.aiFactoryService.generateText_V2(data, user);
+    } catch (error) {
+      console.error('Error processing request:', error);
+      throw new Error('Internal server error');
+    }
+  }
+
+  @Post('generate-task')
+  async generateTask(@Body() data: TaskConfig) {
+    try {
+      return await this.aiFactoryService.generateTask(data);
     } catch (error) {
       console.error('Error processing request:', error);
       throw new Error('Internal server error');
