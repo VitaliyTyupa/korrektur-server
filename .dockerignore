@@ -6,3 +6,4 @@ npm-debug.log
 Dockerfile*
 README.md
 AWS-Architecture-Tekamolo.md
+!package-lock.json
