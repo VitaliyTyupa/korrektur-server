@@ -1,20 +1,22 @@
-import { Injectable } from '@nestjs/common';
-import { DynamodbService } from '../dynamodb/dynamodb.service';
-import { Tables } from '../dynamodb/dynamoDB.interface';
+import { Inject, Injectable } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
+import { TEXT_REPOSITORY } from '../database/database.constants';
+import { TextRepository } from '../database/repositories/text.repository';
 
 @Injectable()
 export class TextService {
-  constructor(private readonly dynamodbService: DynamodbService) {}
+  constructor(
+    @Inject(TEXT_REPOSITORY)
+    private readonly textRepository: TextRepository,
+  ) {}
 
   async getTexts() {
-    return await this.dynamodbService.getAllItems(Tables.TEXT_TABLE);
+    return await this.textRepository.findAll();
   }
 
   async getTextById(id) {
     try {
-      const key = { id };
-      return this.dynamodbService.getItemById(Tables.TEXT_TABLE, key);
+      return await this.textRepository.findById(id);
     } catch (error) {
       console.error('Error processing request:', error.message);
       throw new Error(`Failed to get form: ${id}`);
@@ -24,7 +26,7 @@ export class TextService {
   async createText(data) {
     try {
       const id = uuidv4();
-      await this.dynamodbService.addItem(Tables.TEXT_TABLE, { ...data, id });
+      await this.textRepository.create({ ...data, id });
       return { message: 'Text created successfully' };
     } catch (error) {
       console.error('Error processing request:', error.message);
@@ -34,8 +36,7 @@ export class TextService {
 
   async deleteTextById(id: string) {
     try {
-      const key = { id };
-      await this.dynamodbService.deleteItem(Tables.TEXT_TABLE, key);
+      await this.textRepository.deleteById(id);
       return { message: 'Text deleted successfully' };
     } catch (error) {
       console.error('Error processing request:', error.message);

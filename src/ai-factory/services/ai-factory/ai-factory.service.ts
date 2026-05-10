@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import OpenAI from 'openai';
 import * as process from 'process';
 import {
@@ -7,10 +7,10 @@ import {
   TextPromptsData,
 } from '../prompts/text.prompts';
 import { TextGenerator, TextGeneratorData } from '../prompts/text-generator';
-import { DynamodbService } from '../../../dynamodb/dynamodb.service';
-import { Tables } from '../../../dynamodb/dynamoDB.interface';
 import { User } from '../../../user/user.interface';
-import { TaskGeneratorService } from "../task-generator.service";
+import { TaskGeneratorService } from '../task-generator.service';
+import { TOKEN_USAGE_REPOSITORY } from '../../../database/database.constants';
+import { TokenUsageRepository } from '../../../database/repositories/token-usage.repository';
 
 export interface GapTextBody {
   selectedWords?: string[];
@@ -31,7 +31,8 @@ export interface TaskConfig {
 @Injectable()
 export class AiFactoryService {
   constructor(
-    private readonly dynamodbService: DynamodbService,
+    @Inject(TOKEN_USAGE_REPOSITORY)
+    private readonly tokenUsageRepository: TokenUsageRepository,
     private readonly taskGenerator: TaskGeneratorService,
   ) {}
   async checkSentence(message: string): Promise<any> {
@@ -222,18 +223,7 @@ export class AiFactoryService {
   }
 
   async loggingTokensUsage(userId: string, tokens: number): Promise<void> {
-    const existingRecord = await this.dynamodbService.getItemById(
-      Tables.USAGE_TABLE,
-      { userId },
-    );
-    const newTotal = existingRecord?.total_tokens
-      ? existingRecord.total_tokens + tokens
-      : tokens;
-    const newRecord = {
-      userId,
-      total_tokens: newTotal,
-    };
-    await this.dynamodbService.addItem(Tables.USAGE_TABLE, newRecord);
+    await this.tokenUsageRepository.incrementTokens(userId, tokens);
   }
 
   async generateTask(body: TaskConfig): Promise<any> {

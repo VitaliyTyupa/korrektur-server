@@ -46,14 +46,18 @@ request http://localhost:3000/api
 response 'ok'
 ```
 
-## Connection to DynamoDB
+## Environment
 ```bash
 # Create a new file in the root directory called .env
 # Add the following to the .env file
-AWS_ACCESS_KEY_ID=your_access_key_id
-AWS_SECRET_ACCESS_KEY=your_secret_access_key
-AWS_REGION=your_region
+MONGODB_URI=mongodb://tutor_support_admin:tutorpass@localhost:27017/tutor_support?authSource=tutor_support
 ``` 
+
+Production example:
+
+```bash
+MONGODB_URI=mongodb://tutor_support_admin:SECRET_KEY@mongodb:27017/tutor_support?authSource=tutor_support
+```
 
 
 ## AWS EC2 Ubuntu
@@ -68,4 +72,3 @@ AWS_REGION=your_region
 - pm2 logs
 ...
 ```
-

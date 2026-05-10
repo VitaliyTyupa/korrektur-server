@@ -1,12 +1,9 @@
 import { Module } from '@nestjs/common';
 import { FormBuilderController } from './form-builder.controller';
 import { FormBuilderService } from './form-builder.service';
-import { DynamodbService } from '../dynamodb/dynamodb.service';
-import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [ConfigModule],
   controllers: [FormBuilderController],
-  providers: [FormBuilderService, DynamodbService],
+  providers: [FormBuilderService],
 })
 export class FormBuilderModule {}

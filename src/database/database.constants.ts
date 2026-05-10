@@ -1,0 +1,5 @@
+export const USER_REPOSITORY = Symbol('USER_REPOSITORY');
+export const TEXT_REPOSITORY = Symbol('TEXT_REPOSITORY');
+export const LOG_REPOSITORY = Symbol('LOG_REPOSITORY');
+export const TOKEN_USAGE_REPOSITORY = Symbol('TOKEN_USAGE_REPOSITORY');
+export const FORM_REPOSITORY = Symbol('FORM_REPOSITORY');
