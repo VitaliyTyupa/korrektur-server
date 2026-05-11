@@ -5,7 +5,6 @@ import { LogInterceptor } from './log/log.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.setGlobalPrefix('api');
   app.enableCors();
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalInterceptors(app.get(LogInterceptor));
