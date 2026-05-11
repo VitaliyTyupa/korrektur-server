@@ -3,10 +3,10 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UserModule } from '../user/user.module';
 import { JwtModule } from '@nestjs/jwt';
-import { jwtConstants } from './constants';
 import { AuthGuard } from '../guards/auth.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from '../guards/roles.guard';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   controllers: [AuthController],
@@ -23,11 +23,21 @@ import { RolesGuard } from '../guards/roles.guard';
   ],
   imports: [
     UserModule,
-    JwtModule.register({
+    JwtModule.registerAsync({
       global: true,
-      secret: jwtConstants.secret,
-      // todo: need to be updated to short time with refresh token
-      signOptions: { expiresIn: '7d' },
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        const secret = configService.get<string>('SECRET_JWT');
+        if (!secret) {
+          throw new Error('SECRET_JWT environment variable is not set');
+        }
+        return {
+          secret,
+          // todo: need to be updated to short time with refresh token
+          signOptions: { expiresIn: '7d' },
+        };
+      },
     }),
   ],
   exports: [AuthService],
